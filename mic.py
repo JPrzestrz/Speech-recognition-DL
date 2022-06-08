@@ -1,10 +1,11 @@
 import wave
 import pyaudio
 # Libraries for voice and deep
-import tensorflow as tf
 import numpy as np
 import pathlib
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+import tensorflow as tf
 from func import decode_audio, get_label, get_waveform_and_label, get_spectrogram, plot_spectrogram, get_spectrogram_and_label_id, preprocess_dataset
 
 CHUNK = 1024
@@ -12,7 +13,7 @@ FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 16000
 RECORD_SECONDS = 1
-WAVE_OUTPUT_FILENAME = "go/output.wav"
+WAVE_OUTPUT_FILENAME = "wav_out/output.wav"
 p = pyaudio.PyAudio()
 stream = p.open(format=FORMAT,
                 channels=CHANNELS,
@@ -44,7 +45,7 @@ commands = np.array(tf.io.gfile.listdir(str(data_dir)))
 commands = commands[commands != 'README.md']
 AUTOTUNE = tf.data.AUTOTUNE
 
-MY_TEST_PATH = 'go/'
+MY_TEST_PATH = 'wav_out/'
 data_dir = pathlib.Path(MY_TEST_PATH)
 # Creating tf of all of my files from mydata dir 
 # !IMPORTANT! Very important note is to check 

@@ -1,6 +1,15 @@
-from turtle import width
+# Arcade library
 import arcade 
 import random
+# Libraries for speech recognition 
+import wave
+import pyaudio
+import numpy as np
+import pathlib
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+import tensorflow as tf
+from func import decode_audio, get_label, get_waveform_and_label, get_spectrogram, plot_spectrogram, get_spectrogram_and_label_id, preprocess_dataset
 
 # Screen
 SCREEN_HEIGHT = 700
@@ -21,6 +30,13 @@ UPDATES_PER_FRAME = 5
 OBST_SCALE = 0.2
 OBST_COUNT = 2
 OBST_SPEED = 2
+# Speech constants
+CHUNK = 1024
+FORMAT = pyaudio.paInt16
+CHANNELS = 1
+RATE = 16000
+RECORD_SECONDS = 1
+WAVE_OUTPUT_FILENAME = "wav_out/output.wav"
 
 title = 'GameTest'
 exit = False
@@ -121,10 +137,19 @@ class MyGameWindow(arcade.Window):
         self.score = 0
         self.timer = 0
         self.steering = 1
+        self.delta = 0
         # dividing game into scenes to make it more attractive
         # there will be main menu - 0, game - 1, pause - 2
         self.scene = 0
-
+        # Speech variables 
+        self.speech_active = 0
+        self.p = pyaudio.PyAudio()
+        self.stream = self.p.open(format=FORMAT,
+                                channels=CHANNELS,
+                                rate=RATE,
+                                input=True,
+                                frames_per_buffer=CHUNK)
+        self.frames = []
         # obstacles spawning 
         for i in range(OBST_COUNT):
             obst = arcade.Sprite('images/obstacle.png', scale=OBST_SCALE)
@@ -193,6 +218,16 @@ class MyGameWindow(arcade.Window):
                     self.steer_logo = arcade.Sprite("images/not_speech.png", scale=0.5)
                 self.steer_logo.center_x = SCREEN_WIDTH - self.steer_logo.width//2
                 self.steer_logo.center_y = self.steer_logo.height//2
+            if key == arcade.key.SPACE and self.steering == 1:
+                # Getting 1 sec of speech from microphone 
+                self.speech_active = 1
+                self.p = pyaudio.PyAudio()
+                self.stream = self.p.open(format=FORMAT,
+                                        channels=CHANNELS,
+                                        rate=RATE,
+                                        input=True,
+                                        frames_per_buffer=CHUNK)
+                self.frames = []
 
     def on_key_release(self, key, modifiers):
         """
@@ -201,6 +236,9 @@ class MyGameWindow(arcade.Window):
         if self.scene == 1:
             if (key == arcade.key.LEFT or key == arcade.key.RIGHT) and self.steering == 0:
                 self.player.change_x = 0
+            if key == arcade.key.SPACE and self.steering == 1:
+                # Getting 1 sec of speech from microphone 
+                self.speech_active = 2
 
     def on_mouse_press(self, x, y, button, modifiers):
         """
@@ -218,6 +256,28 @@ class MyGameWindow(arcade.Window):
         if self.scene == 1:
             for obst in self.obst_list:
                 obst.center_y -= OBST_SPEED
+
+        self.delta += 1 
+        if self.delta >= 5:
+            self.delta = 0
+
+        if self.speech_active == 1 and self.delta == 0:
+            data = self.stream.read(CHUNK)
+            self.frames.append(data)
+        
+        if self.speech_active == 2:
+            print("*done recording")
+            self.stream.stop_stream()
+            self.stream.close()
+            self.p.terminate()
+            wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
+            wf.setnchannels(CHANNELS)
+            wf.setsampwidth(self.p.get_sample_size(FORMAT))
+            wf.setframerate(RATE)
+            wf.writeframes(b''.join(self.frames))
+            wf.close()
+            self.frames=[]
+            self.speech_active = 0
 
         # Move the player
         if self.player.center_x < 25:
