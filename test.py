@@ -1,3 +1,4 @@
+from turtle import width
 import arcade 
 import random
 
@@ -102,6 +103,9 @@ class MyGameWindow(arcade.Window):
         self.start_button.center_y = SCREEN_HEIGHT // 2
         self.start_button.scale = BUTTON_SCALE
         self.floor = arcade.Sprite("images/bottom_bar.png", scale=1,center_x=SCREEN_WIDTH//2,center_y=10) 
+        self.steer_logo = arcade.Sprite("images/speech.png", scale=0.5)
+        self.steer_logo.center_x = SCREEN_WIDTH - self.steer_logo.width//2
+        self.steer_logo.center_y = self.steer_logo.height//2
         # Lists setup
         self.player_list = arcade.SpriteList()
         self.obst_list = arcade.SpriteList()
@@ -116,7 +120,7 @@ class MyGameWindow(arcade.Window):
         # Steering: 0 - keyboard, 1 - voice 
         self.score = 0
         self.timer = 0
-        self.steering = 0
+        self.steering = 1
         # dividing game into scenes to make it more attractive
         # there will be main menu - 0, game - 1, pause - 2
         self.scene = 0
@@ -158,6 +162,7 @@ class MyGameWindow(arcade.Window):
         if self.scene == 1:
             # Draw all the sprites.
             self.floor.draw()
+            self.steer_logo.draw()
             self.player_list.draw()
             self.coin_list.draw()
             self.obst_list.draw()
@@ -182,8 +187,12 @@ class MyGameWindow(arcade.Window):
             if key == arcade.key.S:
                 if self.steering == 0:
                     self.steering = 1
+                    self.steer_logo = arcade.Sprite("images/speech.png", scale=0.5)
                 else:
                     self.steering = 0
+                    self.steer_logo = arcade.Sprite("images/not_speech.png", scale=0.5)
+                self.steer_logo.center_x = SCREEN_WIDTH - self.steer_logo.width//2
+                self.steer_logo.center_y = self.steer_logo.height//2
 
     def on_key_release(self, key, modifiers):
         """
