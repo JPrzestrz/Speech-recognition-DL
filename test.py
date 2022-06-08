@@ -1,24 +1,23 @@
 import arcade 
 import random
 
-# XXX
 # Screen
 SCREEN_HEIGHT = 700
 SCREEN_WIDTH = 600
 # Coin 
 COIN_COUNT = 2
-COIN_SCALE = 0.09
+COIN_SCALE = 0.075
 # Start Menu 
 BUTTON_SCALE = 0.5
 # Character, directions, constants for storing facing 
-CHARACTER_SCALE = 1.5
+CHARACTER_SCALE = 1.25
 RIGHT_DIR = 1
 LEFT_DIR = 0
 # How fast to move, and how fast to run the animation
 MOVEMENT_SPEED = 5
 UPDATES_PER_FRAME = 5
 # Obstacle const 
-OBST_SCALE = 0.3
+OBST_SCALE = 0.2
 OBST_COUNT = 2
 OBST_SPEED = 2
 
