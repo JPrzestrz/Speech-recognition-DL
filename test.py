@@ -38,6 +38,15 @@ CHANNELS = 1
 RATE = 16000
 RECORD_SECONDS = 1
 WAVE_OUTPUT_FILENAME = "wav_out/output.wav"
+# Deep learning and testing vars
+DATASET_PATH = 'data/mini_speech_commands'
+data_dir = pathlib.Path(DATASET_PATH)
+commands = np.array(tf.io.gfile.listdir(str(data_dir)))
+commands = commands[commands != 'README.md']
+AUTOTUNE = tf.data.AUTOTUNE
+MY_TEST_PATH = 'wav_out/'
+data_dir = pathlib.Path(MY_TEST_PATH)
+model = tf.keras.models.load_model('saved_model/my_model')
 
 title = 'GameTest'
 exit = False
@@ -283,6 +292,31 @@ class MyGameWindow(arcade.Window):
             wf.writeframes(b''.join(self.frames))
             wf.close()
             self.frames=[]
+            self.speech_active = 3
+
+        if self.speech_active == 3:
+            filenames = tf.io.gfile.glob(str(data_dir) + '/*')
+            #print('\n\nNumber of total examples:', len(filenames))
+            # Processing Files
+            test_ds = preprocess_dataset(filenames)
+            # Dividing into audio and labels 
+            # no or wrong labels in mydata files
+            test_audio = []
+            test_labels = []
+            for audio, label in test_ds:
+                test_audio.append(audio.numpy())
+                test_labels.append(label.numpy())
+            test_audio = np.array(test_audio)
+            test_labels = np.array(test_labels)
+            # Using our trained model to predict audio files
+            # included in mydata dir
+            y_pred = np.argmax(model.predict(test_audio), axis=1)
+            for i in y_pred:
+                print(f'Command: {commands[i]}, label: {i}')
+                if i == 4:
+                    self.speech_dir = 1
+                elif i == 2:
+                    self.speech_dir = 2
             self.speech_active = 0
 
         # Move the player
