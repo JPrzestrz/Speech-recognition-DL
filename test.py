@@ -7,6 +7,7 @@ import pyaudio
 import numpy as np
 import pathlib
 import os
+# Turing off the tensorflow warnings about GPU 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 import tensorflow as tf
 from func import decode_audio, get_label, get_waveform_and_label, get_spectrogram, plot_spectrogram, get_spectrogram_and_label_id, preprocess_dataset
@@ -256,15 +257,20 @@ class MyGameWindow(arcade.Window):
         if self.scene == 1:
             for obst in self.obst_list:
                 obst.center_y -= OBST_SPEED
-
+        
+        # Delta for better performance while reading mic         
         self.delta += 1 
         if self.delta >= 5:
             self.delta = 0
 
+        # Adding frame of recording from microphone 
+        # and appending it to the list     
         if self.speech_active == 1 and self.delta == 0:
             data = self.stream.read(CHUNK)
             self.frames.append(data)
         
+        # When the SPACEBAR is released we collect 
+        # all the frames and save the recording 
         if self.speech_active == 2:
             print("*done recording")
             self.stream.stop_stream()
@@ -330,7 +336,7 @@ class MyGameWindow(arcade.Window):
         for obst in hit_obst:
             obst.remove_from_sprite_lists()
             self.scene = 2
-
+        
 window = MyGameWindow(SCREEN_WIDTH,SCREEN_HEIGHT,title)
 # Window setup 
 window.setup()
