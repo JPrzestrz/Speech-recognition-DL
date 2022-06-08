@@ -101,6 +101,7 @@ class MyGameWindow(arcade.Window):
         self.start_button.center_x = SCREEN_WIDTH // 2
         self.start_button.center_y = SCREEN_HEIGHT // 2
         self.start_button.scale = BUTTON_SCALE
+        self.floor = arcade.Sprite("images/bottom_bar.png", scale=1,center_x=SCREEN_WIDTH//2,center_y=10) 
         # Lists setup
         self.player_list = arcade.SpriteList()
         self.obst_list = arcade.SpriteList()
@@ -112,8 +113,10 @@ class MyGameWindow(arcade.Window):
         self.player.scale = CHARACTER_SCALE
         self.player_list.append(self.player)
         # Game values 
+        # Steering: 0 - keyboard, 1 - voice 
         self.score = 0
         self.timer = 0
+        self.steering = 0
         # dividing game into scenes to make it more attractive
         # there will be main menu - 0, game - 1, pause - 2
         self.scene = 0
@@ -154,6 +157,7 @@ class MyGameWindow(arcade.Window):
 
         if self.scene == 1:
             # Draw all the sprites.
+            self.floor.draw()
             self.player_list.draw()
             self.coin_list.draw()
             self.obst_list.draw()
@@ -171,17 +175,22 @@ class MyGameWindow(arcade.Window):
         Called whenever a key is pressed.
         """
         if self.scene == 1:
-            if key == arcade.key.LEFT:
+            if key == arcade.key.LEFT and self.steering == 0:
                 self.player.change_x = -MOVEMENT_SPEED
-            if key == arcade.key.RIGHT:
+            if key == arcade.key.RIGHT and self.steering == 0:
                 self.player.change_x = MOVEMENT_SPEED
+            if key == arcade.key.S:
+                if self.steering == 0:
+                    self.steering = 1
+                else:
+                    self.steering = 0
 
     def on_key_release(self, key, modifiers):
         """
         Called when the user releases a key.
         """
         if self.scene == 1:
-            if key == arcade.key.LEFT or key == arcade.key.RIGHT:
+            if (key == arcade.key.LEFT or key == arcade.key.RIGHT) and self.steering == 0:
                 self.player.change_x = 0
 
     def on_mouse_press(self, x, y, button, modifiers):
@@ -223,6 +232,7 @@ class MyGameWindow(arcade.Window):
         # Generate a list of all sprites that collided with the player.
         hit_coins = arcade.check_for_collision_with_list(self.player, self.coin_list)
         hit_obst = arcade.check_for_collision_with_list(self.player,self.obst_list)
+        hit_floor = arcade.check_for_collision_with_list(self.floor,self.obst_list)
         
         # Loop through each colliding sprite, remove it, and add to the score.
         for coin in hit_coins:
@@ -238,6 +248,15 @@ class MyGameWindow(arcade.Window):
             coin.center_x = coin.center_x % SCREEN_WIDTH
             coin.center_y = 100
             self.coin_list.append(coin)
+
+        for obst in hit_floor:
+            # Destroying obstacles that touched the floor 
+            obst.remove_from_sprite_lists()
+            # Generating new obstacles 
+            obst = arcade.Sprite('images/obstacle.png', scale=OBST_SCALE)
+            obst.center_x = random.randrange(50,SCREEN_WIDTH-50)
+            obst.center_y = random.randrange(0,300) + SCREEN_HEIGHT
+            self.obst_list.append(obst)
 
         for obst in hit_obst:
             obst.remove_from_sprite_lists()
