@@ -138,11 +138,9 @@ val_ds = val_ds.batch(batch_size)
 train_ds = train_ds.cache().prefetch(AUTOTUNE)
 val_ds = val_ds.cache().prefetch(AUTOTUNE)
 
-# 
 # Simple convolutional neural network (CNN)
 # because we've transformed the audio files 
 # into spectrogram images
-# 
 for spectrogram, _ in spectrogram_ds.take(1):
   input_shape = spectrogram.shape
 #print('Input shape:', input_shape)
