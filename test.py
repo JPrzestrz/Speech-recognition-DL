@@ -280,7 +280,7 @@ class MyGameWindow(arcade.Window):
         
         # When the SPACEBAR is released we collect 
         # all the frames and save the recording 
-        if self.speech_active == 2:
+        if self.speech_active == 2 and self.delta == 0:
             print("*done recording")
             self.stream.stop_stream()
             self.stream.close()
