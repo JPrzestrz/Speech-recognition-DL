@@ -153,6 +153,8 @@ class MyGameWindow(arcade.Window):
         self.scene = 0
         # Speech variables 
         self.speech_active = 0
+        self.speech_dir = 0 
+        self.speech_change = 0
         self.p = pyaudio.PyAudio()
         self.stream = self.p.open(format=FORMAT,
                                 channels=CHANNELS,
@@ -274,14 +276,26 @@ class MyGameWindow(arcade.Window):
 
         # Adding frame of recording from microphone 
         # and appending it to the list     
-        if self.speech_active == 1 and self.delta == 0:
+        if (self.speech_active == 1 and self.delta == 0) or (self.speech_active == 2 and self.delta == 4) :
             data = self.stream.read(CHUNK)
             self.frames.append(data)
+
+        if self.speech_change > 20:
+            self.speech_change = 0
+            self.speech_dir = 0 
+            self.player.change_x = 0
+
+        if self.speech_dir == 2:
+                self.player.change_x = -MOVEMENT_SPEED
+                self.speech_change += 1
+        if self.speech_dir == 1:
+            self.player.change_x = MOVEMENT_SPEED
+            self.speech_change += 1
         
         # When the SPACEBAR is released we collect 
         # all the frames and save the recording 
-        if self.speech_active == 2 and self.delta == 0:
-            print("*done recording")
+        if self.speech_active == 2:
+            #print("*done recording")
             self.stream.stop_stream()
             self.stream.close()
             self.p.terminate()
@@ -312,10 +326,12 @@ class MyGameWindow(arcade.Window):
             # included in mydata dir
             y_pred = np.argmax(model.predict(test_audio), axis=1)
             for i in y_pred:
-                print(f'Command: {commands[i]}, label: {i}')
+                #print(f'Command: {commands[i]}, label: {i}')
                 if i == 4:
+                    # Go right 
                     self.speech_dir = 1
                 elif i == 2:
+                    # Go left 
                     self.speech_dir = 2
             self.speech_active = 0
 
