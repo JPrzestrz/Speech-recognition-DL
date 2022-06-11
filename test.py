@@ -333,6 +333,9 @@ class MyGameWindow(arcade.Window):
                 elif i == 2:
                     # Go left 
                     self.speech_dir = 2
+                elif i == 5:
+                    # Pause the game 
+                    self.scene = 3
             self.speech_active = 0
 
         # Move the player
