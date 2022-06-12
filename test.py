@@ -196,7 +196,7 @@ class MyGameWindow(arcade.Window):
             #print("Here is menu")
             self.start_button.draw()
 
-        if self.scene == 1:
+        if self.scene == 1 or self.scene == 2:
             # Draw all the sprites.
             self.floor.draw()
             self.steer_logo.draw()
@@ -211,6 +211,8 @@ class MyGameWindow(arcade.Window):
                             start_y=10,
                             color=arcade.csscolor.WHITE,
                             font_size=18)
+            if self.scene == 2:
+                arcade.Sprite('images/pause.png', scale = 1, center_x = SCREEN_WIDTH//2, center_y = SCREEN_HEIGHT//2).draw()
 
     def on_key_press(self, key, modifiers):
         """
@@ -335,7 +337,7 @@ class MyGameWindow(arcade.Window):
                     self.speech_dir = 2
                 elif i == 5:
                     # Pause the game 
-                    self.scene = 3
+                    self.scene = 2
             self.speech_active = 0
 
         # Move the player
