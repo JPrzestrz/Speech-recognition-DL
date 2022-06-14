@@ -213,11 +213,31 @@ class MyGameWindow(arcade.Window):
                             font_size=18)
             if self.scene == 2:
                 arcade.Sprite('images/pause.png', scale = 1, center_x = SCREEN_WIDTH//2, center_y = SCREEN_HEIGHT//2).draw()
+        elif self.scene == 3:
+            arcade.Sprite('images/pause.png', scale = 1, center_x = SCREEN_WIDTH//2, center_y = SCREEN_HEIGHT//2).draw()
+            final_score = "FINAL SCORE"
+            arcade.draw_text(final_score,
+                            start_x=0,
+                            start_y=SCREEN_HEIGHT//2,
+                            color=arcade.csscolor.WHITE,
+                            font_size=24,
+                            width = SCREEN_WIDTH,
+                            align = 'center')
+            arcade.draw_text(self.score,
+                            start_x=0,
+                            start_y=SCREEN_HEIGHT//2 - 30,
+                            color=arcade.csscolor.WHITE,
+                            font_size=24,
+                            width = SCREEN_WIDTH,
+                            align = 'center')
+            
 
     def on_key_press(self, key, modifiers):
         """
         Called whenever a key is pressed.
         """
+        if key == arcade.key.R and self.scene == 3:
+            self.setup()
         if self.scene == 1:
             if key == arcade.key.LEFT and self.steering == 0:
                 self.player.change_x = -MOVEMENT_SPEED
@@ -338,6 +358,12 @@ class MyGameWindow(arcade.Window):
                 elif i == 5:
                     # Pause the game 
                     self.scene = 2
+                elif i == 1:
+                    # Rseume the game
+                    if self.scene == 2:
+                        self.scene = 1
+                    elif self.scene == 3:
+                        self.setup()
             self.speech_active = 0
 
         # Move the player
@@ -390,7 +416,7 @@ class MyGameWindow(arcade.Window):
 
         for obst in hit_obst:
             obst.remove_from_sprite_lists()
-            self.scene = 2
+            self.scene = 3
         
 window = MyGameWindow(SCREEN_WIDTH,SCREEN_HEIGHT,title)
 # Window setup 
