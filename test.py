@@ -238,7 +238,7 @@ class MyGameWindow(arcade.Window):
         """
         if key == arcade.key.R and self.scene == 3:
             self.setup()
-        if self.scene == 1:
+        if self.scene == 1 or self.scene == 2:
             if key == arcade.key.LEFT and self.steering == 0:
                 self.player.change_x = -MOVEMENT_SPEED
             if key == arcade.key.RIGHT and self.steering == 0:
@@ -267,7 +267,7 @@ class MyGameWindow(arcade.Window):
         """
         Called when the user releases a key.
         """
-        if self.scene == 1:
+        if self.scene == 1 or self.scene == 2:
             if (key == arcade.key.LEFT or key == arcade.key.RIGHT) and self.steering == 0:
                 self.player.change_x = 0
             if key == arcade.key.SPACE and self.steering == 1:
@@ -293,7 +293,7 @@ class MyGameWindow(arcade.Window):
         
         # Delta for better performance while reading mic         
         self.delta += 1 
-        if self.delta >= 5:
+        if self.delta >= 4:
             self.delta = 0
 
         # Adding frame of recording from microphone 
@@ -348,7 +348,7 @@ class MyGameWindow(arcade.Window):
             # included in mydata dir
             y_pred = np.argmax(model.predict(test_audio), axis=1)
             for i in y_pred:
-                #print(f'Command: {commands[i]}, label: {i}')
+                print(f'Command: {commands[i]}, label: {i}')
                 if i == 4:
                     # Go right 
                     self.speech_dir = 1
