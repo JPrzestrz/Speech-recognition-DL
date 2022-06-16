@@ -186,7 +186,6 @@ class MyGameWindow(arcade.Window):
         """
         Render the screen.
         """
-        # TODO add ending screen and maybe reset of a game 
         # This command has to happen before we start drawing
         self.clear()
         # Draw the background texture
