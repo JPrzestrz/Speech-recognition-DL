@@ -36,7 +36,6 @@ CHUNK = 1024
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 16000
-RECORD_SECONDS = 1
 WAVE_OUTPUT_FILENAME = "wav_out/output.wav"
 # Deep learning and testing vars
 DATASET_PATH = 'data/mini_speech_commands'
@@ -298,6 +297,7 @@ class MyGameWindow(arcade.Window):
         # Adding frame of recording from microphone 
         # and appending it to the list     
         if (self.speech_active == 1 and self.delta == 0) or (self.speech_active == 2 and self.delta == 4) :
+            # Collect voice in "push to talk" manner
             data = self.stream.read(CHUNK)
             self.frames.append(data)
 
