@@ -312,7 +312,7 @@ class MyGameWindow(arcade.Window):
         if self.speech_dir == 1:
             self.player.change_x = MOVEMENT_SPEED
             self.speech_change += 1
-        
+
         # When the SPACEBAR is released we collect 
         # all the frames and save the recording 
         if self.speech_active == 2:
@@ -347,7 +347,7 @@ class MyGameWindow(arcade.Window):
             # included in mydata dir
             y_pred = np.argmax(model.predict(test_audio), axis=1)
             for i in y_pred:
-                print(f'Command: {commands[i]}, label: {i}')
+                #print(f'Command: {commands[i]}, label: {i}')
                 if i == 4:
                     # Go right 
                     self.speech_dir = 1
